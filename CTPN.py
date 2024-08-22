@@ -77,10 +77,6 @@ conv5_3 = keras.layers.Conv2D(filters=512,
                               activation="relu")(conv5_2)
 #VGG16 end
 
-#RPN
-rpnConv3x3 = keras.layers.Conv2D(filters=512,
-                                 kernel_size=(3, 3),
-                                 strides=(1, 1),
-                                 activation="relu")(conv5_3)
+conv3x3 = 0 #正在嘗試實作
 
-Bilstm = keras.layers.Bidirectional(keras.layers.LSTM(128))(rpnConv3x3)
+Bilstm = keras.layers.Bidirectional(keras.layers.LSTM(128))(conv3x3)
