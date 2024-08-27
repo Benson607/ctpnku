@@ -1,5 +1,7 @@
 import keras
+import keras.layers
 import numpy as np
+import tensorflow as tf
 
 class my3x3Layer(keras.layers.Layer):
     def __init__(self):
@@ -77,6 +79,16 @@ conv5_3 = keras.layers.Conv2D(filters=512,
                               activation="relu")(conv5_2)
 #VGG16 end
 
-conv3x3 = 0 #正在嘗試實作
+#理論上conv3x3應使用自訂義函數完成，這裡暫時以捲積替代
+conv3x3 = keras.layers.Conv2D(filters=512,
+                              kernel_size=(3, 3),
+                              strides=(1, 1),
+                              activation="relu")(conv5_3)
 
-Bilstm = keras.layers.Bidirectional(keras.layers.LSTM(128))(conv3x3)
+reshape = tf.reshape(conv3x3, [tf.shape(conv3x3)[0]*tf.shape(conv3x3)[1], tf.shape(conv3x3)[2], tf.shape(conv3x3)[3]])
+
+Bilstm = keras.layers.Bidirectional(keras.layers.LSTM(128))(reshape)
+
+reshape2 = tf.reshape(Bilstm, [tf.shape(conv3x3)[0], tf.shape(conv3x3)[1], tf.shape(conv3x3)[2], tf.shape(conv3x3)[3]])
+
+fc = keras.layers.Dense(activation="relu")(reshape2)
