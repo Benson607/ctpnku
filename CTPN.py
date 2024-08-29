@@ -91,4 +91,23 @@ Bilstm = keras.layers.Bidirectional(keras.layers.LSTM(128))(reshape)
 
 reshape2 = tf.reshape(Bilstm, [tf.shape(conv3x3)[0], tf.shape(conv3x3)[1], tf.shape(conv3x3)[2], tf.shape(conv3x3)[3]])
 
-fc = keras.layers.Dense(activation="relu")(reshape2)
+fc = keras.layers.Dense(units=512,
+                        activation="relu")(reshape2)
+
+rpn_bbox_pred = keras.layers.Conv2D(filters=20,
+                                    kernel_size=(1, 1),
+                                    strides=(1, 1))(fc)
+
+rpn_cls_score = keras.layers.Conv2D(filters=20,
+                                    kernel_size=(1, 1),
+                                    strides=(1, 1))(fc)
+
+rpn_cls_score_reshape = tf.reshape(rpn_cls_score, (tf.shape(rpn_bbox_pred)[0], 10*tf.shape(rpn_bbox_pred)[1], tf.shape(rpn_bbox_pred)[2], 2))
+
+rpn_cls_prob = keras.layers.Softmax()(rpn_cls_score_reshape)
+
+rpn_cls_prob_reshape = tf.reshape(rpn_cls_prob, (tf.shape(rpn_cls_prob)[0], -1, tf.shape(rpn_cls_prob)[2], 20))
+
+print(tf.shape(rpn_cls_score))
+print(tf.shape(rpn_cls_score_reshape))
+print(tf.shape(rpn_cls_prob))
